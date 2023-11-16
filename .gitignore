@@ -19,3 +19,8 @@ events.*
 *.h5
 *.dat
 *.npy
+otamesi_data/*
+otamesi_output/*
+results/*
+samples/*
+*.pt

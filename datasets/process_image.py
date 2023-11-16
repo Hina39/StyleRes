@@ -65,6 +65,8 @@ class ImageProcessor():
         # img = dlib.load_rgb_image(filepath)
         img = np.asarray(image)
         dets = detector(img, 1)
+        if len(dets) == 0:
+            raise ValueError("No face detected in image. Sorry!")
 
         for k, d in enumerate(dets):
             shape = self.predictor(img, d)

@@ -15,7 +15,7 @@ class InferenceOptions:
 
 		self.parser.add_argument('--test_batch_size', default=1, type=int, help='Batch size for inference')
 		self.parser.add_argument('--test_workers', default=0, type=int, help='Number of inference dataloader workers')
-		self.parser.add_argument('--aligner_path', default=None, type=str, help="Optional face alignment network.")
+		self.parser.add_argument('--aligner_path', default="checkpoints/shape_predictor_68_face_landmarks.dat", type=str, help="Optional face alignment network.")
 		self.parser.add_argument('--n_images', type=int, default=None, help='Number of images to output. If None, run on all data')
 		self.parser.add_argument('--edit_configs', type=str, default='options/editing_options/template.py',  help='Which edits to perform on the images. \
 																									Specified in template.py file. See this file for more information ')
