@@ -3,13 +3,9 @@ from PIL import Image
 from .process_image import ImageProcessor
 from torch.utils.data import Dataset
 
+
 class InferenceDataset(Dataset):
-    
-    def __init__(self,
-                 root_dir,
-                 resolution=256,
-                 aligner_path=None
-                 ):
+    def __init__(self, root_dir, resolution=256, aligner_path=None):
         """Initializes the dataset.
 
         Args:
@@ -33,7 +29,6 @@ class InferenceDataset(Dataset):
         image = Image.open(os.path.join(self.root_dir, image_path))
         image = self.processor.align_face(image)
         image = self.processor.preprocess_image(image)
-        data.update({'image': image})
-        data.update({'name': image_path})
+        data.update({"image": image})
+        data.update({"name": image_path})
         return data
-

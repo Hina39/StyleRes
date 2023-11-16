@@ -11,6 +11,7 @@
 # Util classes
 # ------------------------------------------------------------------------------------------
 
+
 class EasyDict(dict):
     """Convenience class that behaves like a dict but allows access with the attribute syntax."""
 
@@ -25,5 +26,3 @@ class EasyDict(dict):
 
     def __delattr__(self, name):
         del self[name]
-
-

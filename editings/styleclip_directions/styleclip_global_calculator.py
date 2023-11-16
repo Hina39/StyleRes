@@ -1,4 +1,5 @@
 import torch
+
 try:
     import clip
 except:
@@ -10,10 +11,19 @@ from options import Settings
 Modified from HyperStyle repository
 https://github.com/yuval-alaluf/hyperstyle/blob/main/editing/styleclip/global_direction.py
 """
-STYLESPACE_DIMENSIONS = [512 for _ in range(15)] + [256, 256, 256] + [128, 128, 128] + [64, 64, 64] + [32, 32]
+STYLESPACE_DIMENSIONS = (
+    [512 for _ in range(15)]
+    + [256, 256, 256]
+    + [128, 128, 128]
+    + [64, 64, 64]
+    + [32, 32]
+)
 
 TORGB_INDICES = list(range(1, len(STYLESPACE_DIMENSIONS), 3))
-STYLESPACE_INDICES_WITHOUT_TORGB = [i for i in range(len(STYLESPACE_DIMENSIONS)) if i not in TORGB_INDICES][:11]
+STYLESPACE_INDICES_WITHOUT_TORGB = [
+    i for i in range(len(STYLESPACE_DIMENSIONS)) if i not in TORGB_INDICES
+][:11]
+
 
 def features_channels_to_s(s_without_torgb, s_std):
     s = []
@@ -29,8 +39,8 @@ def features_channels_to_s(s_without_torgb, s_std):
         s.append(s_i)
     return s
 
-class StyleCLIPGlobalDirection:
 
+class StyleCLIPGlobalDirection:
     def __init__(self, delta_i_c, s_std, text_prompts_templates):
         super(StyleCLIPGlobalDirection, self).__init__()
         self.delta_i_c = delta_i_c
@@ -51,7 +61,7 @@ class StyleCLIPGlobalDirection:
         return direction
 
     def get_delta_i(self, text_prompts):
-        try:   # Check if loaded
+        try:  # Check if loaded
             delta_i = getattr(self, f"{text_prompts[0]}_{text_prompts[1]}")
         except:
             text_features = self._get_averaged_text_features(text_prompts)
@@ -64,9 +74,16 @@ class StyleCLIPGlobalDirection:
         with torch.no_grad():
             text_features_list = []
             for text_prompt in text_prompts:
-                formatted_text_prompts = [template.format(text_prompt) for template in self.text_prompts_templates]  # format with class
-                formatted_text_prompts = clip.tokenize(formatted_text_prompts).to(Settings.device)  # tokenize
-                text_embeddings = self.clip_model.encode_text(formatted_text_prompts)  # embed with text encoder
+                formatted_text_prompts = [
+                    template.format(text_prompt)
+                    for template in self.text_prompts_templates
+                ]  # format with class
+                formatted_text_prompts = clip.tokenize(formatted_text_prompts).to(
+                    Settings.device
+                )  # tokenize
+                text_embeddings = self.clip_model.encode_text(
+                    formatted_text_prompts
+                )  # embed with text encoder
                 text_embeddings /= text_embeddings.norm(dim=-1, keepdim=True)
                 text_embedding = text_embeddings.mean(dim=0)
                 text_embedding /= text_embedding.norm()
