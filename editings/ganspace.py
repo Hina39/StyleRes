@@ -3,12 +3,14 @@ import csv
 from options import Settings
 import os
 
-class GanSpace():
-    def __init__(self) -> None:
 
+class GanSpace:
+    def __init__(self) -> None:
         self.gan_space_configs = {}
-        
-        with open(os.path.join(Settings.ganspace_directions, 'ganspace_configs.csv'), "r") as f:
+
+        with open(
+            os.path.join(Settings.ganspace_directions, "ganspace_configs.csv"), "r"
+        ) as f:
             reader = csv.reader(f, delimiter="\t")
             for row in reader:
                 key = row.pop(0)
@@ -22,18 +24,17 @@ class GanSpace():
             return self.edit_ganspace(latent, gan_space_config)
 
     def load_ganspace_pca(self):
-        try:   # Check if loaded
-            getattr(self, f"pca")
+        try:  # Check if loaded
+            getattr(self, "pca")
         except:
-            pca = torch.load(os.path.join(Settings.ganspace_directions, 'ffhq_pca.pt'))
-            setattr(self, f"pca", pca)
-        
+            pca = torch.load(os.path.join(Settings.ganspace_directions, "ffhq_pca.pt"))
+            setattr(self, "pca", pca)
 
     def edit_ganspace(self, latents, config):
         edit_latents = []
         pca_idx, start, end, strength = config
         for latent in latents:
-            delta = self.get_delta( latent, pca_idx, strength)
+            delta = self.get_delta(latent, pca_idx, strength)
             delta_padded = torch.zeros(latent.shape).to(Settings.device)
             delta_padded[start:end] += delta.repeat(end - start, 1)
             edit_latents.append(latent + delta_padded)
@@ -41,9 +42,12 @@ class GanSpace():
 
     def get_delta(self, latent, idx, strength):
         # pca: ganspace checkpoint. latent: (16, 512) w+
-        w_centered = latent - self.pca['mean'].to(Settings.device)
-        lat_comp = self.pca['comp'].to(Settings.device)
-        lat_std = self.pca['std'].to(Settings.device)
-        w_coord = torch.sum(w_centered[0].reshape(-1)*lat_comp[idx].reshape(-1)) / lat_std[idx]
-        delta = (strength - w_coord)*lat_comp[idx]*lat_std[idx]
+        w_centered = latent - self.pca["mean"].to(Settings.device)
+        lat_comp = self.pca["comp"].to(Settings.device)
+        lat_std = self.pca["std"].to(Settings.device)
+        w_coord = (
+            torch.sum(w_centered[0].reshape(-1) * lat_comp[idx].reshape(-1))
+            / lat_std[idx]
+        )
+        delta = (strength - w_coord) * lat_comp[idx] * lat_std[idx]
         return delta

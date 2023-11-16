@@ -2,7 +2,8 @@ import torch
 from options import Settings
 import os
 
-class InterFaceGAN():
+
+class InterFaceGAN:
     def __init__(self) -> None:
         pass
 
@@ -15,13 +16,15 @@ class InterFaceGAN():
             direction = getattr(self, f"{editname}_direction")
         except:
             direction = self.load_direction(editname)
-            if Settings.device != 'cpu':
+            if Settings.device != "cpu":
                 direction = direction.to(Settings.device)
             setattr(self, f"{editname}_direction", direction.clone())
         return direction
 
     def load_direction(self, editname):
-        direction = torch.load(os.path.join( Settings.interfacegan_directions, f'{editname}.pt'))
-        if Settings.device != 'cpu':
+        direction = torch.load(
+            os.path.join(Settings.interfacegan_directions, f"{editname}.pt")
+        )
+        if Settings.device != "cpu":
             direction = direction.cuda()
         return direction

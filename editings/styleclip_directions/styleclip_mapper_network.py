@@ -7,21 +7,24 @@ import math
 """
 Modified from StyleClip repository
 https://github.com/orpatashnik/StyleCLIP/blob/main/mapper/latent_mappers.py
-""" 
+"""
 
-def fused_leaky_relu(input, bias, negative_slope=0.2, scale=2 ** 0.5):
+
+def fused_leaky_relu(input, bias, negative_slope=0.2, scale=2**0.5):
     rest_dim = [1] * (input.ndim - bias.ndim - 1)
     if input.ndim == 3:
         return (
             F.leaky_relu(
-                input + bias.view(1, *rest_dim, bias.shape[0]), negative_slope=negative_slope
+                input + bias.view(1, *rest_dim, bias.shape[0]),
+                negative_slope=negative_slope,
             )
             * scale
         )
     else:
         return (
             F.leaky_relu(
-                input + bias.view(1, bias.shape[0], *rest_dim), negative_slope=negative_slope
+                input + bias.view(1, bias.shape[0], *rest_dim),
+                negative_slope=negative_slope,
             )
             * scale
         )
@@ -32,7 +35,8 @@ class PixelNorm(nn.Module):
         super().__init__()
 
     def forward(self, input):
-        return input * torch.rsqrt(torch.mean(input ** 2, dim=1, keepdim=True) + 1e-8)
+        return input * torch.rsqrt(torch.mean(input**2, dim=1, keepdim=True) + 1e-8)
+
 
 class EqualLinear(nn.Module):
     def __init__(
@@ -65,8 +69,8 @@ class EqualLinear(nn.Module):
 
         return out
 
-class Mapper(Module):
 
+class Mapper(Module):
     def __init__(self, latent_dim=512):
         super(Mapper, self).__init__()
 
@@ -75,12 +79,11 @@ class Mapper(Module):
         for i in range(4):
             layers.append(
                 EqualLinear(
-                    latent_dim, latent_dim, lr_mul=0.01, activation='fused_lrelu'
+                    latent_dim, latent_dim, lr_mul=0.01, activation="fused_lrelu"
                 )
             )
 
         self.mapping = nn.Sequential(*layers)
-
 
     def forward(self, x):
         x = self.mapping(x)
@@ -88,7 +91,6 @@ class Mapper(Module):
 
 
 class LevelsMapper(Module):
-
     def __init__(self, opts):
         super(LevelsMapper, self).__init__()
 
@@ -118,7 +120,6 @@ class LevelsMapper(Module):
             x_fine = self.fine_mapping(x_fine)
         else:
             x_fine = torch.zeros_like(x_fine)
-
 
         out = torch.cat([x_coarse, x_medium, x_fine], dim=1)
 
