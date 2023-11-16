@@ -23,8 +23,8 @@ def initialize_styleres(checkpoint_path, device):
         param.requires_grad = False
     return model
 
-def run():
-    args = InferenceOptions().parse()
+def run(args):
+    #args = InferenceOptions().parse()
     edit_configs = parse_config(args.edit_configs)
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -68,4 +68,5 @@ def run():
 
 
 if __name__ == '__main__':
-    run()
+    args = InferenceOptions().parse()
+    run(args)
